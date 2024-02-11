@@ -8,11 +8,11 @@ from datetime import datetime, timedelta
 
 
 
-def main():
+def kun_uz():
     # Calculate yesterday's date
     yesterday = datetime.now().date() - timedelta(days=1)
 
-    # Yesterday's first second (midnight)
+    # Yesterday's first second (00:00:00)
     f = datetime.combine(yesterday, datetime.min.time())
     f = int(f.timestamp())
 
@@ -44,8 +44,7 @@ def main():
     print('Maxed browser')
     articles = []
     # Open the link
-    for category in [{"url_directory": "uzbekiston", "name": "ЎЗБЕКИСТОН"},
-                    {"url_directory": "jahon", "name": "ЖАҲОН"}]:
+    for category in categories:
         driver.implicitly_wait(10)
         driver.get(f'https://kun.uz/news/category/{category["url_directory"]}?f={f}&next={next}')
 
@@ -83,8 +82,7 @@ def main():
                                 "number_of_views": number_of_views, 
                                 "article_source": "Kun.uz"})
         
-    for article in article_details:
-        print("*****: ", article, "\n")
+    return article_details
         # driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         # time.sleep(3)
         # driver.find_element(By.CLASS_NAME, "load-more__link").click()
@@ -105,5 +103,4 @@ def save(articles):
 
 
 
-if __name__ == "__main__":
-    main()
+kun_uz()
