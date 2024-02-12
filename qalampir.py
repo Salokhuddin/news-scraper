@@ -36,7 +36,7 @@ def qalampir():
     driver.get("https://www.qalampir.uz/latest")
 
     # Collect info
-    # show_more(driver, actions)
+    show_more(driver, actions)
     news_cards = driver.find_elements(By.CLASS_NAME, "news-card")
     article_urls = []
     for card in news_cards:
