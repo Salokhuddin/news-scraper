@@ -42,7 +42,7 @@ def kun_uz():
     # Maximize the browser to fullscreen
     driver.maximize_window()
     print('Maxed browser')
-    articles = []
+    article_urls = []
     # Open the link
     for category in categories:
         driver.implicitly_wait(10)
@@ -61,12 +61,15 @@ def kun_uz():
             # Save article url and publication date 
             if publication_date_timestamp >= f:
                 article_url = card.find_element(By.CLASS_NAME, "news__title").get_attribute("href")
-                articles.append({"article_category": category["name"],
+                article_urls.append({"article_category": category["name"],
                                  "publication_datetime": publication_date,
                                  "article_url": article_url})
-    save(articles)
+                
+    return collect_artilce_details(driver, article_urls)
+
+def collect_artilce_details(driver, article_urls):
     article_details = []
-    for article in articles:
+    for article in article_urls:
         driver.get(article["article_url"])
         article_headline = driver.find_element(By.CLASS_NAME, "single-header__title").text
         article_thesis = driver.find_element(By.CLASS_NAME, "single-content").find_element(By.XPATH, "*[1]").text

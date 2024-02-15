@@ -49,6 +49,10 @@ def qalampir():
                 article_urls.append({"article_url": article_url,
                                     "article_publication_date": article_publication_date})
                 print(len(article_urls))
+
+    return collect_article_details(driver, article_urls)
+
+def collect_article_details(driver, article_urls):
     article_details = []
     for article in article_urls:
         driver.get(article["article_url"])

@@ -1,8 +1,6 @@
-from datetime import datetime, timedelta
+# text = "mx-4 relative md:mx-0 flex justify-end flex-col _main_hot_post pl-4 pr-7 pb-4 rounded-lg space-y-3"
 
-date = "КЕЧА, 18:22"
+# print(text.replace(" ", "."))
 
-publication_time = date.split(", ")[1]
-publication_date = str(datetime.now() - timedelta(days=1)).split()[0]
-publication_datetime = f"{publication_date} {publication_time}"
-print(datetime.strptime(publication_datetime, "%Y-%m-%d %H:%M"))
+# [a, e, f, g, k, l, m]
+

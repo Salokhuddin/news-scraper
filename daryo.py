@@ -49,14 +49,16 @@ def daryo():
             article_urls.append({"article_url": article_url,
                                 "publication_datetime": publication_date})
 
-    article_details = []
 
+    return collect_article_details(driver, article_urls)
+
+def collect_article_details(driver, article_urls):
+    article_details = []
     for article in article_urls:
         driver.get(article["article_url"])
         article_headline = driver.find_element(By.CLASS_NAME, "is-title.post-title").text.strip()
         article_thesis = driver.find_element(By.CLASS_NAME, 
                                              "post-content.post-content-custom.cf.entry-content.content-spacious.default__section.border.post-content-voice").find_element(By.TAG_NAME, "p").text.strip()
-        print(article_thesis)
         thesis_length_words = len(article_thesis.split())
         thesis_length_chars = len(article_thesis.replace(" ", ""))
         number_of_views = driver.find_element(By.CLASS_NAME, "meta-item.post-views.has-icon.rank-hot").text.strip()
@@ -70,8 +72,7 @@ def daryo():
                                 "number_of_views": number_of_views, 
                                 "article_source": "Daryo.uz"})
 
-    for article in article_details:
-        print(article)
+    return article_details
         
 
 def show_more(driver, actions):
