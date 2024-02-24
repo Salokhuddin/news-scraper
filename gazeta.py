@@ -1,8 +1,6 @@
 # Scrapes the news info from gazeta.uz
 # import libraries
-from selenium import webdriver
 from selenium.webdriver.common.by import By
-import time, os, csv, sys, psycopg2
 from selenium.webdriver.common.action_chains import ActionChains
 from datetime import datetime, timedelta
 
@@ -10,23 +8,7 @@ from datetime import datetime, timedelta
 # Calculate yesterday's date
 yesterday = datetime.now() - timedelta(days=1)
 
-def gazeta():    
-    # Set options (prevents the browser from closing after opening)
-    options = webdriver.ChromeOptions()
-    options.add_experimental_option("detach", True)
-    # options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-
-    # Open the browser
-    print('Opening browser')
-    driver = webdriver.Chrome(options=options)
-    print('Opened browser')
-    actions = ActionChains(driver)
-
-    # Maximize the browser to fullscreen
-    driver.maximize_window()
-    print('Maxed browser')
-
+def gazeta(driver):   
     # Open the webpage
     driver.implicitly_wait(7)
     
@@ -41,15 +23,12 @@ def gazeta():
             if card_date.date() == yesterday.date():
                 article_urls.append({"article_url": card.find_element(By.TAG_NAME, "a").get_attribute("href"),
                                     "publication_datetime": card_date})
-        if card_date.date() < yesterday.date():
-            print("Breaking here")
+        if card_date.date() < yesterday.date():    
             break
         page_number += 1
 
     return collect_article_details(driver, article_urls)
    
-
-    
 
 def collect_article_details(driver, article_urls):
     article_details = []
@@ -66,7 +45,10 @@ def collect_article_details(driver, article_urls):
             try:                       
                 number_of_views = driver.find_element(By.XPATH, "/html/body/div[1]/div[3]/div[3]/div[1]/div[3]").text.split("\n")[0].split("»")[1].strip()
             except Exception as e:
-                number_of_views = driver.find_element(By.XPATH, "/html/body/div[1]/div[3]/div[3]/div[1]/div[3]").text.split("\n")[0].split(".")[1].strip()
+                try:
+                    number_of_views = driver.find_element(By.XPATH, "/html/body/div[1]/div[3]/div[3]/div[1]/div[3]").text.split("\n")[0].split(".uz")[1][1:].strip()
+                except Exception:
+                    number_of_views = driver.find_element(By.XPATH, "/html/body/div[1]/div[3]/div[3]/div[1]/div[3]").text.split("\n")[0].split('"')[1].strip()
         category = driver.find_element(By.CSS_SELECTOR, "span[itemprop='name']").text.strip()
         article_details.append({"article_url": article["article_url"], 
                                 "headline": article_headline, 
@@ -82,12 +64,9 @@ def date_to_datetime(date):
     if "Кеча" in date:
         time = date.split(" ")[1]
         publication_datetime = f"{yesterday.date()} {time}"
-        print(publication_datetime)
         publication_datetime = datetime.strptime(publication_datetime, "%Y-%m-%d %H:%M")
         return publication_datetime
     elif "Бугун" in date:
         return datetime.now()
     else:
         return datetime.now() - timedelta(days=2)
-
-gazeta()

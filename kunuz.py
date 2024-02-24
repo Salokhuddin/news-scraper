@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 
 
-def kun_uz():
+def kun_uz(driver):
     # Calculate yesterday's date
     yesterday = datetime.now().date() - timedelta(days=1)
 
@@ -29,19 +29,7 @@ def kun_uz():
                 {"url_directory": "sport", "name": "СПОРТ"},
                 {"url_directory": "nuqtai-nazar", "name": "НУҚТАЙИ НАЗАР"}]
     
-    # Set options (prevents the browser from closing after opening)
-    options = webdriver.ChromeOptions()
-    options.add_experimental_option("detach", True)
-    # options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    # Open the browser
-    print('Opening browser')
-    driver = webdriver.Chrome(options=options)
-    print('Opened browser')
     actions = ActionChains(driver)
-    # Maximize the browser to fullscreen
-    driver.maximize_window()
-    print('Maxed browser')
     article_urls = []
     # Open the link
     for category in categories:
@@ -95,15 +83,6 @@ def collect_artilce_details(driver, article_urls):
         # load_more_button.click()
 
 
-def save(articles):
-    with open('article_urls.csv', 'a') as file:
-        writer = csv.DictWriter(file, fieldnames=["article_url", "article_category", "publication_datetime"])
-        writer.writeheader()
-        for article in articles:
-            writer.writerow({"article_url": article["article_url"],
-                             "article_category": article["article_category"], 
-                             "publication_datetime": article["publication_datetime"]})
 
 
 
-kun_uz()

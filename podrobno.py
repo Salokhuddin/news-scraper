@@ -1,18 +1,15 @@
 # Scrapes the news info from podrobno.uz
 # import libraries
-from selenium import webdriver
 from selenium.webdriver.common.by import By
-import time, os, csv, sys, psycopg2
-from selenium.webdriver.common.action_chains import ActionChains
+import time
 from datetime import datetime, timedelta
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 
 
-# Calculate yesterday's date
-yesterday = datetime.now().date() - timedelta(days=1)
-
-def podrobno():
-
+def podrobno(driver):
+    # Calculate yesterday's date
+    yesterday = datetime.now().date() - timedelta(days=1)
 
     # Declare categories
     categories = [{"url_directory": "politic", "name": "Политика"},
@@ -32,26 +29,15 @@ def podrobno():
                 {"url_directory": "razbor", "name": "Разбор"},
                 {"url_directory": "uzbekistan-fakty-sobytiya-litsa", "name": "Узбекистан. Факты, события, лица"}]
 
-    # Set options (prevents the browser from closing after opening)
-    options = webdriver.ChromeOptions()
-    options.add_experimental_option("detach", True)
-    # options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-    # Open the browser
-    print('Opening browser')
-    driver = webdriver.Chrome(options=options)
-    print('Opened browser')
     actions = ActionChains(driver)
-    # Maximize the browser to fullscreen
-    driver.maximize_window()
-    print('Maxed browser')
+
     article_urls = []
     # Open the link
     article_details = []
     for category in categories:
         driver.implicitly_wait(5)
         driver.get(f'https://podrobno.uz/cat/{category["url_directory"]}/')
-        webdriver.ActionChains(driver).send_keys(Keys.ESCAPE).perform()
+        actions.send_keys(Keys.ESCAPE).perform()
         time.sleep(1.3)
         scroll_smoothly(driver, height=1800)
         news_cards = driver.find_elements(By.TAG_NAME, "article")
@@ -62,7 +48,6 @@ def podrobno():
                 time.sleep(1.3)
                 news_cards = driver.find_elements(By.TAG_NAME, "article")
                 if date_to_datetime(news_cards[-1].find_element(By.CLASS_NAME, "entry-date.published.updated").text.strip()).date() < yesterday:
-                    print(date_to_datetime(news_cards[-1].find_element(By.CLASS_NAME, "entry-date.published.updated").text.strip()).date())
                     break
                 show_more(driver, actions)
             for card in news_cards:
@@ -116,6 +101,3 @@ def date_to_datetime(date):
         return publication_datetime
     except Exception as e:
         return datetime.now() - timedelta(days=2)
-
-
-podrobno()

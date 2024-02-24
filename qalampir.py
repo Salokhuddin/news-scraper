@@ -8,28 +8,11 @@ from datetime import datetime, timedelta
 
 
 
-def qalampir():
+def qalampir(driver):
     # Calculate yesterday's date
-    yesterday = datetime.now().date() - timedelta(days=1)
-
-    # Declare categories
+    yesterday = datetime.now().date() - timedelta(days=1)    
     
-    
-    # Set options (prevents the browser from closing after opening)
-    options = webdriver.ChromeOptions()
-    options.add_experimental_option("detach", True)
-    # options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-
-    # Open the browser
-    print('Opening browser')
-    driver = webdriver.Chrome(options=options)
-    print('Opened browser')
     actions = ActionChains(driver)
-
-    # Maximize the browser to fullscreen
-    driver.maximize_window()
-    print('Maxed browser')
 
     # Open the webpage
     driver.implicitly_wait(7)
@@ -41,14 +24,12 @@ def qalampir():
     article_urls = []
     for card in news_cards:
         article_publication_date = card.find_element(By.CLASS_NAME, "date").text
-        print(article_publication_date)
         if len(article_publication_date.split()) > 1:
             article_publication_date = convert_to_datetime(article_publication_date)
             if article_publication_date.day == yesterday.day:
                 article_url = card.get_attribute("href")
                 article_urls.append({"article_url": article_url,
                                     "article_publication_date": article_publication_date})
-                print(len(article_urls))
 
     return collect_article_details(driver, article_urls)
 
@@ -59,6 +40,8 @@ def collect_article_details(driver, article_urls):
         article_headline = driver.find_element(By.CLASS_NAME, "title").text
         number_of_views = driver.find_element(By.CLASS_NAME, "right").text.split("\n")[-1]
         category = driver.find_element(By.CLASS_NAME, "left").text
+        if category == "3-саҳифа":
+            category = "Жамият - 3-саҳифа"
         article_details.append({"article_url": article["article_url"], 
                                 "headline": article_headline, 
                                 "publication_datetime": article["article_publication_date"], 
@@ -101,4 +84,3 @@ def convert_to_datetime(date):
     full_date = f"{date_parts[0]} {date_month} {current_year}"
     return datetime.strptime(full_date, "%d %B %Y")
 
-qalampir()

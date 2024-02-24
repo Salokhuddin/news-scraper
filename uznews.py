@@ -10,22 +10,8 @@ from datetime import datetime, timedelta
 # Calculate yesterday's date
 yesterday = datetime.now().date() - timedelta(days=1)
 
-def uznews():
-    # Set options (prevents the browser from closing after opening)
-    options = webdriver.ChromeOptions()
-    options.add_experimental_option("detach", True)
-    # options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-
-    # Open the browser
-    print('Opening browser')
-    driver = webdriver.Chrome(options=options)
-    print('Opened browser')
+def uznews(driver):
     actions = ActionChains(driver)
-
-    # Maximize the browser to fullscreen
-    driver.maximize_window()
-    print('Maxed browser')
 
     # Open the webpage
     driver.implicitly_wait(7)
@@ -37,7 +23,6 @@ def uznews():
         card_date = news_cards[-1].find_element(By.CLASS_NAME, "font-medium.text-black.opacity-70.text_13").text.strip()
         
         if date_to_datetime(card_date).date() < yesterday:
-            print("Breaking here")
             break
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(1.7)
@@ -51,11 +36,10 @@ def uznews():
             card_date = article.find_element(By.CLASS_NAME, "font-medium.text-black.opacity-70.text_13").text.strip()
         except Exception:
             pass
-        print(card_date)
         publication_datetime = date_to_datetime(card_date)
         if publication_datetime.date() == yesterday:
             time.sleep(1.5)
-            article_url = article.find_element(By.TAG_NAME, "a").get_attribute("href").strip()
+            article_url = article.find_elements(By.TAG_NAME, "a")[1].get_attribute("href")
             article_headline = article.find_element(By.TAG_NAME, "h3").text.strip()
             article_thesis = article.find_element(By.CLASS_NAME, "height_2_ellips.text-sm.mb-2.description").text.strip()
             thesis_length_words = len(article_thesis.split())
@@ -123,10 +107,8 @@ def date_to_datetime(date):
     try:
         day, month, time = tuple(date.split(" "))
         publication_datetime = f"{yesterday.year}-{month_name_translation[month.strip(',')]}-{day} {time}"
-        print(publication_datetime)
         publication_datetime = datetime.strptime(publication_datetime, "%Y-%m-%d %H:%M")
         return publication_datetime
     except Exception:
         return datetime.now() - timedelta(days=2)
     
-uznews()

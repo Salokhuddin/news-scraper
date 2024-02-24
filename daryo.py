@@ -1,6 +1,5 @@
 # Scrapes the news info from daryo.uz
 # import libraries
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time, os, csv, sys, psycopg2
 from selenium.webdriver.common.action_chains import ActionChains
@@ -8,28 +7,10 @@ from datetime import datetime, timedelta
 
 
 
-def daryo():
+def daryo(driver):
     # Calculate yesterday's date
     yesterday = datetime.now().date() - timedelta(days=1)
-
-    # Declare categories
-    
-    
-    # Set options (prevents the browser from closing after opening)
-    options = webdriver.ChromeOptions()
-    options.add_experimental_option("detach", True)
-    # options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
-
-    # Open the browser
-    print('Opening browser')
-    driver = webdriver.Chrome(options=options)
-    print('Opened browser')
     actions = ActionChains(driver)
-
-    # Maximize the browser to fullscreen
-    driver.maximize_window()
-    print('Maxed browser')
 
     # Open the webpage
     driver.implicitly_wait(7)
@@ -73,6 +54,7 @@ def collect_article_details(driver, article_urls):
                                 "article_source": "Daryo.uz"})
 
     return article_details
+
         
 
 def show_more(driver, actions):
@@ -90,5 +72,3 @@ def convert_to_datetime(date):
     publication_date = str(datetime.now() - timedelta(days=1)).split()[0]
     publication_datetime = f"{publication_date} {publication_time}"
     return datetime.strptime(publication_datetime, "%Y-%m-%d %H:%M")
-
-daryo()
