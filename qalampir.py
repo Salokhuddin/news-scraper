@@ -41,7 +41,7 @@ def collect_article_details(driver, article_urls):
         number_of_views = driver.find_element(By.CLASS_NAME, "right").text.split("\n")[-1]
         category = driver.find_element(By.CLASS_NAME, "left").text
         if category == "3-саҳифа":
-            category = "Жамият - 3-саҳифа"
+            category = "Жамият: 3-саҳифа"
         article_details.append({"article_url": article["article_url"], 
                                 "headline": article_headline, 
                                 "publication_datetime": article["article_publication_date"], 
@@ -56,7 +56,7 @@ def show_more(driver, actions):
     for i in range(1):
         load_more_button = driver.find_element(By.CLASS_NAME, "refresh-btn")       
         driver.execute_script("arguments[0].scrollIntoView(true);", load_more_button)
-        time.sleep(1.3)
+        time.sleep(1.5)
         load_more_button.click()
         # actions.move_to_element(load_more_button).perform()
         # time.sleep(2)

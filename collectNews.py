@@ -8,6 +8,8 @@ from uznews import uznews
 from itertools import chain
 from selenium import webdriver
 from datetime import datetime
+from save_to_db import df_to_sql
+
 
 def collect_news():
     options = webdriver.ChromeOptions()
@@ -23,12 +25,14 @@ def collect_news():
     print('Maxed browser')
     # [uznews, podrobno, qalampir, daryo, kun_uz, gazeta]
     article_details = []
-    for publisher in [qalampir]:
+    for publisher in [uznews, podrobno, qalampir, daryo, kun_uz, gazeta]:
         article_details.append(collect(publisher, driver))
+    driver.close()
     article_details = list(chain.from_iterable(article_details))
     articles = pd.DataFrame(article_details)
-    articles.to_csv("articles.csv", index=False)
-    driver.close()
+    df_to_sql(dataframe=articles, table="articles")
 
 def collect(func, driver):
     return func(driver)
+
+collect_news()
